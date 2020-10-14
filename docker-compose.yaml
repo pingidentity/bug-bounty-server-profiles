@@ -1,0 +1,110 @@
+version: "3.3"
+# The server profiles used in this example are intended for use with edge versions of the product image only.
+
+#--------------------------------------------------------------------------------------
+#- Ping Identity fullstack integrated demo
+#-
+#-     app    console
+#-     443    9000
+#-      |      |
+#-   +----------------+
+#-   |   PingAccess   |
+#-   +----------------+
+#-
+#-     login  console          console           rest    ldaps
+#-     9031   9999               8443            1443    1636
+#-      |      |                  |               |       |
+#-   +---------------+    +---------------+    +---------------+
+#-   | PingFederate  |    |PingDataConsole|    | PingDirectory |
+#-   +---------------+    +---------------+    +---------------+
+#-
+#-   +-----------------------+--------------------------------------------------------+
+#-   |  Product Console/App  |  URL                                                   |
+#-   |                       |    username: administrator                             |
+#-   |                       |    password: 2FederateM0re                             |
+#-   +-----------------------+--------------------------------------------------------+
+#-   |  PingAccess           |  https://localhost:9000/                               |
+#-   |  PingFederate         |  https://localhost:9999/pingfederate/app               |
+#-   |  PingDirectory        |  https://localhost:8443/   (Server=pingdirectory)      |
+#-   +-----------------------+--------------------------------------------------------+
+#--------------------------------------------------------------------------------------
+
+services:
+  pingaccess:
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingaccess:${PING_IDENTITY_DEVOPS_TAG}
+    container_name: pingaccess-bb
+    command: wait-for pingfederate:9031 -t 420 -- entrypoint.sh start-server
+    environment:
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_PATH=baseline/pingaccess
+    env_file:
+      - .env
+    ports:
+      - "443:443"
+      - "9000:9000"
+    networks:
+      - pingnet-dmz
+    volumes:
+      - pingaccess-out:/opt/out
+
+  pingfederate:
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingfederate:${PING_IDENTITY_DEVOPS_TAG}
+    container_name: pingfederate-bb
+    command: wait-for pingdirectory:389 -t 300 -- entrypoint.sh start-server
+    environment:
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_PATH=baseline/pingfederate
+    env_file:
+      - .env
+    ports:
+      - "9031:9031"
+      - "9999:9999"
+    networks:
+      - pingnet-dmz
+      - pingnet-internal
+    volumes:
+      - pingfederate-out:/opt/out
+
+  pingdirectory:
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingdirectory:${PING_IDENTITY_DEVOPS_TAG}
+    container_name: pingdirectory-bb
+    environment:
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_PATH=baseline/pingdirectory
+    env_file:
+      - .env
+    ulimits:
+      nproc:
+        soft: 16384
+        hard: 16384
+      nofile:
+        soft: 65535
+        hard: 65535
+    ports:
+      - "1636:636"
+      - "1443:443"
+      - "1389:389"
+    networks:
+      - pingnet-internal
+    volumes:
+      - pingdirectory-out:/opt/out
+
+  pingdataconsole:
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingdataconsole:${PING_IDENTITY_DEVOPS_TAG}
+    container_name: pingdataconsole-bb
+    ports:
+      - "8443:8443"
+    networks:
+      - pingnet-internal
+
+networks:
+    pingnet-internal:
+    pingnet-dmz:
+
+volumes:
+  pingaccess-out:
+    name: pingaccess-out
+  pingfederate-out:
+    name: pingfederate-out
+  pingdirectory-out:
+    name: pingdirectory-out
