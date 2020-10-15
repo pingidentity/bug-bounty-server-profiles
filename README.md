@@ -42,8 +42,28 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
      - LDAP BaseDN: dc=example,dc=com
      - Root Username: cn=administrator
      - Root Password: 2FederateM0re
-6. Stop all containers `docker-compose down` when you done testing
+     - HTTPS Port: 1443
+     - HTTPS extensions endpoints
+     ```log
+      Available or Degraded State : https://localhost:1443/available-or-degraded-state
+      Available State             : https://localhost:1443/available-state
+      Configuration               : https://localhost:1443/config/*
+      Consent                     : https://localhost:1443/consent/v1/*
+      Delegated Admin             : https://localhost:1443/dadmin/v2/*
+      Directory REST API          : https://localhost:1443/directory/v1/*
+      Instance Root File          : https://localhost:1443/instance-root/*
+      SCIM2                       : https://localhost:1443/scim/v2/*
+      ```
+
+6. Stop all containers with `docker-compose down` when done testing
 
 ## Troubleshooting
 1. Check full logs with `docker-compose logs -f ` or for a single product with `docker compose logs -f pingaccess|pingdirectory|pingfederate`
 2. Consult the troubleshooting [Guide](https://github.com/pingidentity/pingidentity-devops-getting-started/blob/master/docs/troubleshooting.md)
+
+## Hints
+### Container's anatomy
+Containers' internal structure is described in https://pingidentity-devops.gitbook.io/devops/config/containeranatomy
+
+### SH into a container
+You can shell into containers to inspect the file structure, view log files, make configuration changes with `docker exec -it pingdirectory-bb /bin/sh`. Use the `container_name` attribute value from the compose file as a target. Product
