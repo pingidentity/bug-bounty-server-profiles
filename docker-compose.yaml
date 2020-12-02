@@ -4,12 +4,12 @@ version: "3.3"
 #--------------------------------------------------------------------------------------
 #- Ping Identity fullstack integrated demo
 #-
-#-     app    console
-#-     443    9000
-#-      |      |
-#-   +----------------+
-#-   |   PingAccess   |
-#-   +----------------+
+#-     app    console            app
+#-     443    9000               6443
+#-      |      |                  |
+#-   +----------------+   +---------------+
+#-   |   PingAccess   |   | PingDelegator |
+#-   +----------------+   +---------------+
 #-
 #-     login  console          console           rest    ldaps
 #-     9031   9999               8443            1443    1636
@@ -25,6 +25,7 @@ version: "3.3"
 #-   +-----------------------+--------------------------------------------------------+
 #-   |  PingAccess           |  https://localhost:9000/                               |
 #-   |  PingFederate         |  https://localhost:9999/pingfederate/app               |
+#-   |  PingDelegator        |  https://localhost:6443/                               |
 #-   |  PingDirectory        |  https://localhost:8443/   (Server=pingdirectory)      |
 #-   +-----------------------+--------------------------------------------------------+
 #--------------------------------------------------------------------------------------
@@ -52,8 +53,12 @@ services:
     container_name: pingfederate-bb
     command: wait-for pingdirectory:389 -t 300 -- entrypoint.sh start-server
     environment:
-      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-      - SERVER_PROFILE_PATH=baseline/pingfederate
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/bug-bounty-server-profiles.git
+      - SERVER_PROFILE_PATH=profiles/pingfederate
+      - SERVER_PROFILE_BRANCH=master
+      - SERVER_PROFILE_PARENT=BASELINE
+      - SERVER_PROFILE_BASELINE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_BASELINE_PATH=baseline/pingfederate
     env_file:
       - .env
     ports:
@@ -69,8 +74,12 @@ services:
     image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingdirectory:${PING_IDENTITY_DEVOPS_TAG}
     container_name: pingdirectory-bb
     environment:
-      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-      - SERVER_PROFILE_PATH=baseline/pingdirectory
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/bug-bounty-server-profiles.git
+      - SERVER_PROFILE_PATH=profiles/pingdirectory
+      - SERVER_PROFILE_BRANCH=master
+      - SERVER_PROFILE_PARENT=BASELINE
+      - SERVER_PROFILE_BASELINE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_BASELINE_PATH=baseline/pingdirectory
     env_file:
       - .env
     ulimits:
@@ -96,6 +105,20 @@ services:
       - "8443:8443"
     networks:
       - pingnet-internal
+
+  pingdelegator:
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingdelegator:${PING_IDENTITY_DEVOPS_TAG}
+    container_name: pingdelegator-bb
+    environment:
+      - PD_ENGINE_PUBLIC_PORT=1443
+      - SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      - SERVER_PROFILE_PATH=baseline/pingdelegator
+    env_file:
+      - .env
+    ports:
+      - "6443:6443"
+    networks:
+      - pingnet-dmz
 
 networks:
     pingnet-internal:

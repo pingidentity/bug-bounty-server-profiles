@@ -1,0 +1,10 @@
+                     Security Warning
+
+This is the default bug bounty server profile for PingDirectory.
+The configuration contains default
+keys/credentials etc and is not suitable for production as it carries a substantial
+security risk.
+
+For additional information, please see
+https://github.com/pingidentity/pingidentity-devops-getting-started/blob/master/SECURITY.md
+https://github.com/pingidentity/bug-bounty-server-profiles

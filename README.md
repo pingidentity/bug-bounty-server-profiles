@@ -1,5 +1,5 @@
 # Ping Identity BugBounty Setup
-Docker compose configuration for a PA-PF-PD stack for quick deployment and testing.
+Docker compose configuration for quick deployment and testing of the Ping stack.
 
 ## Prerequisites
 * [Docker](https://docs.docker.com/install/)
@@ -16,6 +16,7 @@ Name                     Command                  State                         
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 pingaccess-bb        ./bootstrap.sh wait-for pi ...   Up (healthy)   3000/tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:9000->9000/tcp
 pingdataconsole-bb   ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:8443->8443/tcp
+pingdelegator-bb     ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:6443->6443/tcp
 pingdirectory-bb     ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:1389->389/tcp, 0.0.0.0:1443->443/tcp, 5005/tcp, 0.0.0.0:1636->636/tcp, 689/tcp
 pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:9031->9031/tcp, 0.0.0.0:9999->9999/tcp
 ```
@@ -36,6 +37,12 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
      - Console URL: `https://localhost:9000`
      - User: Administrator
      - Password: 2FederateM0re
+
+   * PingDelegator
+     - URL: `https://localhost:6443`
+     - User: administrator
+     - Password: 2FederateM0re
+     - PingFederate OIDC
 
    * Apache Directory Studio for PingDirectory
      - LDAP Port: 1636
@@ -61,9 +68,16 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
 1. Check full logs with `docker-compose logs -f ` or for a single product with `docker compose logs -f pingaccess|pingdirectory|pingfederate`
 2. Consult the troubleshooting [Guide](https://github.com/pingidentity/pingidentity-devops-getting-started/blob/master/docs/troubleshooting.md)
 
+### Errors
+```
+ERROR: for pingdelegator  Cannot start service pingdelegator: driver failed programming external connectivity on endpoint pingdelegator-bb (025e96555814d12caae4e79dc61c03182dba525f05d8c03deb678393e3fda3ac): Error starting userland proxy: listen tcp 0.0.0.0:6443: bind: address already in use
+ERROR: Encountered errors while bringing up the project.
+```
+The Delegator application is running on the port 6443. Unfortunately, there is no simple way to change the port through environment variables. Disabling other services that use the same port solves the issue. **Kubernetes API** service is running on 6443.
+
 ## Hints
 ### Container's anatomy
 Containers' internal structure is described in https://pingidentity-devops.gitbook.io/devops/config/containeranatomy
 
 ### SH into a container
-You can shell into containers to inspect the file structure, view log files, make configuration changes with `docker exec -it pingdirectory-bb /bin/sh`. Use the `container_name` attribute value from the compose file as a target. Product
+You can shell into containers to inspect the file structure, view log files, make configuration changes with `docker exec -it pingdirectory-bb /bin/sh`. Use the `container_name` attribute value from the compose file as a target.
