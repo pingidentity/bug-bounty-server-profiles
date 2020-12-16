@@ -41,6 +41,7 @@ services:
     env_file:
       - .env
     ports:
+      - "3000:3000"
       - "443:443"
       - "9000:9000"
     networks:
