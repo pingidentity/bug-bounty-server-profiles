@@ -37,6 +37,8 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
      - Console URL: `https://localhost:9000`
      - User: Administrator
      - Password: 2FederateM0re
+   * Sample App through PingAccess
+     - httpbin.org: `https://localhost:3000`
 
    * PingDelegator
      - URL: `https://localhost:6443`
@@ -66,7 +68,9 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
 
 ## Troubleshooting
 1. Check full logs with `docker-compose logs -f ` or for a single product with `docker compose logs -f pingaccess|pingdirectory|pingfederate`
-2. Consult the troubleshooting [Guide](https://github.com/pingidentity/pingidentity-devops-getting-started/blob/master/docs/troubleshooting.md)
+2. Consult the troubleshooting [Guide](https://devops.pingidentity.com/reference/troubleshooting/)
+3. Delete volumes `docker volume rm $(docker volume ls -q)`
+4. Update images with `docker-compose pull` and restart with `docker-compose up --build --force-recreate -d`
 
 ### Errors
 ```
@@ -77,7 +81,7 @@ The Delegator application is running on the port 6443. Unfortunately, there is n
 
 ## Hints
 ### Container's anatomy
-Containers' internal structure is described in https://pingidentity-devops.gitbook.io/devops/config/containeranatomy
+Containers' internal structure is described in the [Guide](https://devops.pingidentity.com/reference/config/#imagecontainer-anatomy)
 
 ### SH into a container
 You can shell into containers to inspect the file structure, view log files, make configuration changes with `docker exec -it pingdirectory-bb /bin/sh`. Use the `container_name` attribute value from the compose file as a target.
