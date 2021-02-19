@@ -21,6 +21,6 @@
     </urn:ApcToUserKeyMapping>
     <urn:ReuseExistingPersistentGrantForGrant>implicit</urn:ReuseExistingPersistentGrantForGrant>
     <urn:allowedOrigins>https://${PD_DELEGATOR_PUBLIC_HOSTNAME}</urn:allowedOrigins>
-    <urn:allowedOrigins>https://${PF_ENGINE_PUBLIC_HOSTNAME}:${PF_ENGINE_PUBLIC_PORT}</urn:allowedOrigins>
-    <urn:allowedOrigins>https://${PD_DELEGATOR_PUBLIC_HOSTNAME}:${PD_DELEGATOR_PUBLIC_PORT}</urn:allowedOrigins>
+    <urn:allowedOrigins>https://${PF_ENGINE_PUBLIC_HOSTNAME}:${PF_ENGINE_PUBLIC_PORT_HTTPS}</urn:allowedOrigins>
+    <urn:allowedOrigins>https://${PD_DELEGATOR_PUBLIC_HOSTNAME}:${PD_DELEGATOR_PUBLIC_PORT_HTTPS}</urn:allowedOrigins>
 </urn:OAuthConfig>
