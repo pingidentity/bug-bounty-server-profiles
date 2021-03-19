@@ -5,7 +5,7 @@ version: "3.3"
 #- Ping Identity fullstack integrated demo
 #-
 #-     app    console            app
-#-     443    9000               6443
+#-    2443    9000               6443
 #-      |      |                  |
 #-   +----------------+   +---------------+
 #-   |   PingAccess   |   | PingDelegator |
@@ -46,7 +46,7 @@ services:
       - .env
     ports:
       - "3000:3000"
-      - "443:443"
+      - "2443:1443"
       - "9000:9000"
     networks:
       - pingnet-dmz
@@ -56,7 +56,7 @@ services:
   pingfederate:
     image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingfederate:${PING_IDENTITY_DEVOPS_TAG}
     container_name: pingfederate-bb
-    command: wait-for pingdirectory:389 -t 300 -- entrypoint.sh start-server
+    command: wait-for pingdirectory:1389 -t 300 -- entrypoint.sh start-server
     environment:
       - SERVER_PROFILE_URL=https://github.com/pingidentity/bug-bounty-server-profiles.git
       - SERVER_PROFILE_PATH=profiles/pingfederate
@@ -95,9 +95,9 @@ services:
         soft: 65535
         hard: 65535
     ports:
-      - "1636:636"
-      - "1443:443"
-      - "1389:389"
+      - "1636:1636"
+      - "1443:1443"
+      - "1389:1389"
     networks:
       - pingnet-internal
     volumes:
