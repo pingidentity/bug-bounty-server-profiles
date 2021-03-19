@@ -10,21 +10,21 @@ Docker compose configuration for quick deployment and testing of the Ping stack.
 1. Rename `env.example` to `.env` and replace `<USER_EMAIL>` `<USER_KEY>` with your credentials
 2. From a directory where the `docker-compose.yaml` file is located run `docker-compose up -d`
 3. Monitor containers status with `docker-compose ps`
-4. Verify all containers are in a healthy state:
+4. Verify all containers are running:
 ```
-Name                     Command                  State                                               Ports
------------------------------------------------------------------------------------------------------------------------------------------------------------
-pingaccess-bb        ./bootstrap.sh wait-for pi ...   Up (healthy)   3000/tcp, 0.0.0.0:443->443/tcp, 0.0.0.0:9000->9000/tcp
-pingdataconsole-bb   ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:8443->8443/tcp
-pingdelegator-bb     ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:6443->6443/tcp
-pingdirectory-bb     ./bootstrap.sh start-server      Up (healthy)   0.0.0.0:1389->389/tcp, 0.0.0.0:1443->443/tcp, 5005/tcp, 0.0.0.0:1636->636/tcp, 689/tcp
-pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:9031->9031/tcp, 0.0.0.0:9999->9999/tcp
+    Name                     Command               State                                             Ports
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+pingaccess-bb        ./bootstrap.sh wait-for pi ...   Up      0.0.0.0:2443->1443/tcp, 0.0.0.0:3000->3000/tcp, 0.0.0.0:9000->9000/tcp
+pingdataconsole-bb   ./bootstrap.sh start-server      Up      0.0.0.0:8443->8443/tcp
+pingdelegator-bb     ./bootstrap.sh start-server      Up      0.0.0.0:6443->6443/tcp
+pingdirectory-bb     ./bootstrap.sh start-server      Up      0.0.0.0:1389->1389/tcp, 0.0.0.0:1443->1443/tcp, 0.0.0.0:1636->1636/tcp, 1689/tcp, 5005/tcp
+pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up      0.0.0.0:9031->9031/tcp, 0.0.0.0:9999->9999/tcp
 ```
 5. Log in to the management consoles for the products:
 
    * Ping Data Console for PingDirectory
      - Console URL: `https://localhost:8443/console`
-     - Server: pingdirectory
+     - Server: pingdirectory:1636
      - User: Administrator
      - Password: 2FederateM0re
 
@@ -66,10 +66,23 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up (healthy)   0.0.0.0:903
 
 6. Stop all containers with `docker-compose down` when done testing
 
+## Pictures
+### PingFederate:
+<img src="img/pf.png" alt="console_pf" width="1000"/>
+
+### PingAccess:
+<img src="img/pa.png" alt="console_pa" width="1000"/>
+
+### PingDirectory:
+<img src="img/pd.png" alt="console_pd" width="1000"/>
+
+### DelegatedAdmin:
+<img src="img/pda.png" alt="console_pda" width="1000"/>
+
 ## Troubleshooting
 1. Check full logs with `docker-compose logs -f ` or for a single product with `docker compose logs -f pingaccess|pingdirectory|pingfederate`
 2. Consult the troubleshooting [Guide](https://devops.pingidentity.com/reference/troubleshooting/)
-3. Delete volumes `docker volume rm $(docker volume ls -q)`
+3. Delete volumes `docker volume rm $(docker volume ls -q | grep -rih 'ping.*\-out')`
 4. Update images with `docker-compose pull` and restart with `docker-compose up --build --force-recreate -d`
 
 ### Errors
@@ -78,6 +91,11 @@ ERROR: for pingdelegator  Cannot start service pingdelegator: driver failed prog
 ERROR: Encountered errors while bringing up the project.
 ```
 The Delegator application is running on the port 6443. Unfortunately, there is no simple way to change the port through environment variables. Disabling other services that use the same port solves the issue. **Kubernetes API** service is running on 6443.
+
+```
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://localhost:1443/dadmin/v2/resourceTypes. (Reason: CORS request did not succeed)
+```
+CORS error occurs due to the browser blocking self-signed certificates. You need to visit affected resources and approve certificates.
 
 ## Hints
 ### Container's anatomy
