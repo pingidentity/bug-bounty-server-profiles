@@ -82,20 +82,28 @@ pingfederate-bb      ./bootstrap.sh wait-for pi ...   Up      0.0.0.0:9031->9031
 ## Troubleshooting
 1. Check full logs with `docker-compose logs -f ` or for a single product with `docker compose logs -f pingaccess|pingdirectory|pingfederate`
 2. Consult the troubleshooting [Guide](https://devops.pingidentity.com/reference/troubleshooting/)
-3. Delete volumes `docker volume rm $(docker volume ls -q | grep -rih 'ping.*\-out')`
+3. Delete volumes `docker volume rm $(docker volume ls -q | grep -ih 'ping.*\-out')`
 4. Update images with `docker-compose pull` and restart with `docker-compose up --build --force-recreate -d`
 
 ### Errors
+1. Error during container initialization.
 ```
 ERROR: for pingdelegator  Cannot start service pingdelegator: driver failed programming external connectivity on endpoint pingdelegator-bb (025e96555814d12caae4e79dc61c03182dba525f05d8c03deb678393e3fda3ac): Error starting userland proxy: listen tcp 0.0.0.0:6443: bind: address already in use
 ERROR: Encountered errors while bringing up the project.
 ```
 The Delegator application is running on the port 6443. Unfortunately, there is no simple way to change the port through environment variables. Disabling other services that use the same port solves the issue. **Kubernetes API** service is running on 6443.
 
+2. Error in DelegatedAdmin
 ```
 Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://localhost:1443/dadmin/v2/resourceTypes. (Reason: CORS request did not succeed)
 ```
 CORS error occurs due to the browser blocking self-signed certificates. You need to visit affected resources and approve certificates.
+
+3. Error in DelegatedAdmin after a successful login
+```
+You could not be authenticated due to a validation error. Please verify token configuration or contact your server administrator to correct the issue.
+```
+Visit `https://localhost:1443/dadmin/v2/resourceTypes` in your browser and accept the certificate.
 
 ## Hints
 ### Container's anatomy
