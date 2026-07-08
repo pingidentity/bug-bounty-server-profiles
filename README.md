@@ -4,13 +4,14 @@ Docker compose configuration for quick deployment and testing of the Ping stack.
 ## Prerequisites
 * [Docker](https://docs.docker.com/install/)
 * [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop on Mac and Windows)
-* DevOps credentials to obtain licenses
+* [DevOps credentials](https://developer.pingidentity.com/devops/how-to/devopsRegistration.html) to obtain licenses
 
 ## Setup
-1. Rename `env.example` to `.env` and replace `<USER_EMAIL>` `<USER_KEY>` with your credentials
-2. From a directory where the `docker-compose.yaml` file is located run `docker-compose up -d`
-3. Monitor containers status with `docker-compose ps`
-4. Verify all containers are running:
+1. Rename `env.example` to `.env` 
+2. Replace `<USER_EMAIL>` `<USER_KEY>` with your credentials in the `.env` file
+3. From a directory where the `docker-compose.yaml` file is located run `docker-compose up -d`
+4. Monitor containers status with `docker-compose ps`
+5. Verify all containers are running:
 ```
     Name                     Command               State                                             Ports
 --------------------------------------------------------------------------------------------------------------------------------------------------------

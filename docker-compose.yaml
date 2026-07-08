@@ -54,16 +54,16 @@ services:
       - pingaccess-out:/opt/out
 
   pingfederate:
-    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingfederate:${PING_IDENTITY_DEVOPS_TAG}
+    image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingfederate:2605-13.0.3
     container_name: pingfederate-bb
     command: wait-for pingdirectory:1389 -t 300 -- entrypoint.sh start-server
     environment:
       - SERVER_PROFILE_URL=https://github.com/pingidentity/bug-bounty-server-profiles.git
       - SERVER_PROFILE_PATH=profiles/pingfederate
       - SERVER_PROFILE_BRANCH=master
-      - SERVER_PROFILE_PARENT=BASELINE
-      - SERVER_PROFILE_BASELINE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-      - SERVER_PROFILE_BASELINE_PATH=baseline/pingfederate
+      # - SERVER_PROFILE_PARENT=BASELINE
+      # - SERVER_PROFILE_BASELINE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+      # - SERVER_PROFILE_BASELINE_PATH=baseline/pingfederate
     env_file:
       - .env
     ports:
