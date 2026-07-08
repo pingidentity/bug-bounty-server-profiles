@@ -112,3 +112,16 @@ Containers' internal structure is described in the [Guide](https://devops.pingid
 
 ### SH into a container
 You can shell into containers to inspect the file structure, view log files, make configuration changes with `docker exec -it pingdirectory-bb /bin/sh`. Use the `container_name` attribute value from the compose file as a target.
+
+### Local server profiles
+For local testing, you can mount a folder with a server profile on the host file system to a location in a container. See the [Guide](https://developer.pingidentity.com/devops/how-to/containerAnatomy.html#devops-mount-as-a-docker-volume) for more details.
+For example, for PingFederate profile, in the `pingfederate` section in the `docker-compose.yaml` file:
+1. Remove all `SERVER_PROFILE_*` entries.
+2. Add a new volume that binds to the local profile in `profiles/pingfederate` and to `/opt/in` in the container:
+```
+    volumes:
+      - pingfederate-out:/opt/out
+      - ./profiles/pingfederate:/opt/in
+```
+3. Delete the old volume with `docker volume rm pingfederate-out`.
+4. Start the container.

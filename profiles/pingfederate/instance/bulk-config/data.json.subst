@@ -461,7 +461,7 @@
         },
         {
             "operationType": "SAVE",
-            "items": [{"virtualHostNames": ["pingfederate"]}],
+            "items": [{"virtualHostNames": ["pingfederate", "localhost"]}],
             "resourceType": "/virtualHostNames"
         },
         {
