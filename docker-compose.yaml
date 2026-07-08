@@ -74,6 +74,7 @@ services:
       - pingnet-internal
     volumes:
       - pingfederate-out:/opt/out
+      # - ./profiles/pingfederate:/opt/in
 
   pingdirectory:
     image: ${PING_IDENTITY_DEVOPS_REGISTRY}/pingdirectory:${PING_IDENTITY_DEVOPS_TAG}
